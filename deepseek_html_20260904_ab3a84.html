@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>请假审批单 · 电子版</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .leave-card {
+      max-width: 880px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 50px rgba(0, 20, 40, 0.08), 0 8px 20px rgba(0, 20, 40, 0.04);
+      padding: 2.4rem 2.8rem 2.8rem;
+      transition: all 0.2s;
+      border: 1px solid rgba(220, 232, 245, 0.4);
+    }
+
+    /* 头部 */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 2px solid #e6edf6;
+      padding-bottom: 0.9rem;
+      margin-bottom: 1.8rem;
+      flex-wrap: wrap;
+    }
+
+    .title-group h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #0b2a44;
+      line-height: 1.2;
+    }
+
+    .title-group .sub {
+      font-size: 0.85rem;
+      color: #5d7a96;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    .date-badge {
+      background: #f0f6fe;
+      padding: 0.3rem 1.4rem;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      color: #1d4c73;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #d8e6f5;
+    }
+
+    /* 表单网格 */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 0.6rem 0.8rem;
+      margin-bottom: 1.2rem;
+      background: #f9fcff;
+      padding: 1.2rem 1.2rem 0.4rem;
+      border-radius: 24px;
+      border: 1px solid #e3edf7;
+    }
+
+    .field-label {
+      font-weight: 550;
+      color: #1d3d5a;
+      font-size: 0.95rem;
+      padding: 0.3rem 0;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+    }
+
+    .field-value {
+      padding: 0.3rem 0 0.3rem 0.4rem;
+      border-bottom: 1px dashed #c9daea;
+      font-size: 0.95rem;
+      color: #0e2d47;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.3rem 0.8rem;
+    }
+
+    .field-value .placeholder {
+      color: #8aa3bb;
+      font-weight: 350;
+    }
+
+    .field-value .underline-input {
+      display: inline-block;
+      min-width: 80px;
+      border-bottom: 1.5px solid #b7cedf;
+      padding: 0 0.2rem;
+      color: #0b2f4a;
+      font-weight: 450;
+    }
+
+    .field-value .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.8rem;
+    }
+
+    .checkbox-group label {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-weight: 400;
+      color: #1d415f;
+      font-size: 0.9rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2f6b92;
+      cursor: default;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .field-full .field-value {
+      border-bottom: 1px dashed #c9daea;
+    }
+
+    /* 事由 + 时间 特殊 */
+    .reason-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.2rem 0.5rem;
+    }
+
+    .time-block {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.2rem 0.6rem;
+    }
+
+    .time-block .sep {
+      color: #7e9bb3;
+      font-weight: 300;
+    }
+
+    .time-block .underline-input {
+      min-width: 70px;
+    }
+
+    .total-days {
+      background: #e3effa;
+      padding: 0.1rem 1rem;
+      border-radius: 40px;
+      font-weight: 500;
+      color: #1c4b6e;
+      font-size: 0.9rem;
+      margin-left: 0.2rem;
+    }
+
+    /* 批准意见 三列 */
+    .approval-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin: 1.8rem 0 1.5rem;
+    }
+
+    .approval-item {
+      background: #f7faff;
+      border-radius: 20px;
+      padding: 0.9rem 1.2rem 1.2rem;
+      border: 1px solid #e3edf7;
+      text-align: center;
+    }
+
+    .approval-item .role {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #2f5b7c;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: #e8f0f9;
+      display: inline-block;
+      padding: 0.1rem 0.8rem;
+      border-radius: 40px;
+      margin-bottom: 0.4rem;
+    }
+
+    .approval-item .sign-line {
+      border-bottom: 2px solid #b7cfdf;
+      height: 2.4rem;
+      margin-top: 0.2rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: #6790ad;
+      letter-spacing: 1px;
+      padding-bottom: 0.2rem;
+    }
+
+    .approval-item .date-line {
+      font-size: 0.7rem;
+      color: #789bb3;
+      margin-top: 0.2rem;
+      border-top: 1px dashed #d6e3ee;
+      padding-top: 0.3rem;
+    }
+
+    /* 填写说明 */
+    .notes {
+      background: #f5faff;
+      border-radius: 20px;
+      padding: 1.2rem 1.6rem;
+      border: 1px solid #e3edf7;
+      margin-top: 1.8rem;
+    }
+
+    .notes h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1c4461;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .notes ul {
+      list-style: none;
+      padding-left: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.3rem 1.2rem;
+    }
+
+    .notes li {
+      font-size: 0.85rem;
+      color: #1f4663;
+      padding-left: 1.4rem;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .notes li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #2e6d96;
+      font-weight: 700;
+    }
+
+    .notes li strong {
+      font-weight: 600;
+      color: #0a314b;
+    }
+
+    .note-extra {
+      margin-top: 0.3rem;
+      grid-column: 1 / -1;
+      font-size: 0.85rem;
+      background: #ecf4fc;
+      padding: 0.1rem 1rem;
+      border-radius: 40px;
+      display: inline-block;
+      color: #1b4b6b;
+    }
+
+    /* 响应式 */
+    @media (max-width: 700px) {
+      .leave-card {
+        padding: 1.6rem 1.2rem;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+        padding: 0.8rem 1rem;
+      }
+      .field-label {
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+      .field-value {
+        border-bottom: 1px solid #d7e3ef;
+        padding-bottom: 0.3rem;
+        margin-bottom: 0.2rem;
+      }
+      .approval-grid {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+      }
+      .notes ul {
+        grid-template-columns: 1fr;
+      }
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+      }
+      .date-badge {
+        align-self: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .checkbox-group {
+        flex-direction: column;
+        gap: 0.1rem;
+      }
+      .time-block {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* 装饰 */
+    .dot-divider {
+      color: #b3ccdf;
+      padding: 0 0.2rem;
+    }
+
+    .light-muted {
+      color: #6b8fa8;
+      font-weight: 350;
+    }
+  </style>
+</head>
+<body>
+  <div class="leave-card">
+
+    <!-- 头部：标题 + 日期 -->
+    <div class="header">
+      <div class="title-group">
+        <h1>📋 请假审批单</h1>
+        <div class="sub">Leave Request Form · 电子流程</div>
+      </div>
+      <div class="date-badge">
+        <span>📅</span> 年 月 日
+      </div>
+    </div>
+
+    <!-- 主要表单区域 (模拟填写状态) -->
+    <div class="form-grid">
+      <!-- 申请人 -->
+      <div class="field-label">申请人</div>
+      <div class="field-value"><span class="underline-input" style="min-width:120px;">龚幸雲</span></div>
+
+      <!-- 部门 -->
+      <div class="field-label">部门</div>
+      <div class="field-value"><span class="underline-input" style="min-width:120px;">财务部</span></div>
+
+      <!-- 假期 -->
+      <div class="field-label">假期</div>
+      <div class="field-value">
+        <span class="placeholder" style="margin-right: 4px;">工作代理人</span>
+        <span class="underline-input" style="min-width:80px;">张明</span>
+      </div>
+
+      <!-- 请假类别 占两列 -->
+      <div class="field-label">请假类别</div>
+      <div class="field-value">
+        <div class="checkbox-group">
+          <label><input type="checkbox" checked> 事假</label>
+          <label><input type="checkbox"> 病假</label>
+          <label><input type="checkbox"> 年假</label>
+          <label><input type="checkbox"> 调休</label>
+          <label><input type="checkbox"> 婚假</label>
+          <label><input type="checkbox"> 丧假</label>
+          <label><input type="checkbox"> 其他 <span style="margin-left:4px; border-bottom:1px solid #b7cedf; min-width:50px; display:inline-block;"></span></label>
+        </div>
+      </div>
+
+      <!-- 事由 占两列 -->
+      <div class="field-label field-full">事 由</div>
+      <div class="field-value field-full">
+        <span class="reason-row">
+          <span class="underline-input" style="min-width:200px;">参加行业财务研讨会</span>
+          <span style="color:#6b8fa8; margin-left: 0.3rem;">(详情备注)</span>
+        </span>
+      </div>
+
+      <!-- 请假时间 占两列 -->
+      <div class="field-label field-full">请假时间</div>
+      <div class="field-value field-full">
+        <div class="time-block">
+          <span>年</span><span class="underline-input" style="min-width:32px;">2026</span>
+          <span>月</span><span class="underline-input" style="min-width:28px;">09</span>
+          <span>日</span><span class="underline-input" style="min-width:28px;">04</span>
+          <span>时</span><span class="underline-input" style="min-width:32px;">09</span>
+          <span class="sep">至</span>
+          <span>年</span><span class="underline-input" style="min-width:32px;">2026</span>
+          <span>月</span><span class="underline-input" style="min-width:28px;">09</span>
+          <span>日</span><span class="underline-input" style="min-width:28px;">05</span>
+          <span>时</span><span class="underline-input" style="min-width:32px;">18</span>
+          <span class="sep">止，共计</span>
+          <span class="total-days">2 天</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 批准意见三栏 -->
+    <div class="approval-grid">
+      <div class="approval-item">
+        <div class="role">人事行政部</div>
+        <div class="sign-line">_________________</div>
+        <div class="date-line">年 月 日</div>
+      </div>
+      <div class="approval-item">
+        <div class="role">部门负责人</div>
+        <div class="sign-line">_________________</div>
+        <div class="date-line">年 月 日</div>
+      </div>
+      <div class="approval-item">
+        <div class="role">总经理</div>
+        <div class="sign-line">_________________</div>
+        <div class="date-line">年 月 日</div>
+      </div>
+    </div>
+
+    <!-- 填写说明 -->
+    <div class="notes">
+      <h4>📌 填写说明</h4>
+      <ul>
+        <li><strong>1. 流程：</strong>请假人填表 → 人事行政部 → 部门负责人 → 总经理</li>
+        <li><strong>2. 适用范围：</strong>公司所有员工</li>
+        <li><strong>3. 申请经批准后，</strong>交人事行政部备案</li>
+        <li><strong>4. 病假、婚假、丧假</strong>等假期需出具相关证明</li>
+        <li class="note-extra">⏱️ 电子表单 · 请如实填写，审批后生效</li>
+      </ul>
+    </div>
+
+    <!-- 底部 版本/日期 装饰 -->
+    <div style="margin-top: 1.4rem; display: flex; justify-content: flex-end; font-size: 0.7rem; color: #7f9eb7; border-top: 1px solid #e6edf6; padding-top: 0.8rem; gap: 1rem;">
+      <span>版本 V2.0</span>
+      <span>· 内部使用 ·</span>
+      <span>📄 电子审批单</span>
+    </div>
+  </div>
+</body>
+</html>
